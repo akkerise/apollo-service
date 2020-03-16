@@ -1,21 +1,46 @@
-const Product = require('./models/products.js')
-const User = require('./models/user.js')
+const Product = require('./models/products.js'),
+  User = require('./models/user.js'),
+  Category = require('./models/category.js');
 
 const resolvers = {
   Query: {
-    getProducts: async (_, args) => {
-      const products = await Product.find().skip(args.offset).limit(args.limit);
-      const count = await Product.count({});
+    getProducts: async (_, {keyword, category, offset, limit}) => {
+      const products = await Product.find({
+        $or: [
+          {
+            name: {$regex: keyword, $options: 'i'}
+          }
+        ],
+      })
+        .where({category})
+        .skip(offset)
+        .limit(limit);
+      const count = products.length;
       const hasMore = products.length ? true : false;
-      return { products, count, hasMore };
+      return {products, count, hasMore};
     },
+    getUsers: async (_, {keyword, category, offset, limit}) => {
+      const users = await User.find().skip(offset).limit(limit);
+      const count = await User.count({});
+      const hasMore = users.length ? true : false;
+      return {users, count, hasMore}
+    },
+    getCategories: async (_, args) => {
+    
+    },
+    getProductDetail: async (_, {_id}) => {
+      return await Product
+        .findOne({_id})
+        .populate('category')
+        .exec();
+    }
   },
   Mutation: {
     addProduct: async (_, args) => {
       try {
         let response = await Product.create(args);
         return response;
-      } catch(e) {
+      } catch (e) {
         return e.message;
       }
     },
@@ -29,4 +54,4 @@ const resolvers = {
     },
   }
 }
-module.exports = resolvers
+module.exports = resolvers;
