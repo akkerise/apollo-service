@@ -12,7 +12,7 @@ const schema = new Schema({
     status: {type: String},
     type: {type: String},
     variants: [{type: String}],
-    category: {type: Schema.Types.ObjectId, ref: 'Category'},
+    category: {type: Schema.Types.ObjectId, ref: 'category'},
     gallery: [
       {
         id: {type: String},

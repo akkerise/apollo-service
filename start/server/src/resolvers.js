@@ -1,20 +1,23 @@
-const Product = require('./models/products.js'),
-  User = require('./models/user.js'),
-  Category = require('./models/category.js');
+const ProductService = require('./services/product.js'),
+  User = require('./services/user.js'),
+  Category = require('./services/category.js');
 
 const resolvers = {
   Query: {
-    getProducts: async (_, {keyword, category, offset, limit}) => {
-      const products = await Product.find({
-        $or: [
-          {
-            name: {$regex: keyword, $options: 'i'}
-          }
-        ],
-      })
-        .where({category})
-        .skip(offset)
-        .limit(limit);
+    getProducts: async (_, params, {dataSources}) => {
+      // const products = await Product.find({
+      //   $or: [
+      //     {
+      //       name: {$regex: keyword, $options: 'i'}
+      //     }
+      //   ],
+      // })
+      //   // .where({category})
+      //   .skip(offset)
+      //   .limit(limit);
+      // const count = products.length;
+      // const hasMore = products.length ? true : false;
+      const products = await dataSources.product.find(params);
       const count = products.length;
       const hasMore = products.length ? true : false;
       return {products, count, hasMore};
@@ -25,14 +28,21 @@ const resolvers = {
       const hasMore = users.length ? true : false;
       return {users, count, hasMore}
     },
-    getCategories: async (_, args) => {
-    
+    getCategories: async (_, {keyword, category, offset, limit}) => {
+      const categories = await Category.find().skip(offset).limit(limit);
+      const count = await Category.count({});
+      const hasMore = categories.length ? true : false;
+      return {categories, count, hasMore}
     },
     getProductDetail: async (_, {_id}) => {
-      return await Product
+      const product = await Product
         .findOne({_id})
         .populate('category')
-        .exec();
+        .exec(function (err, category) {
+          if (err) return handleError(err);
+          return category;
+        });
+        return product
     }
   },
   Mutation: {

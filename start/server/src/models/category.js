@@ -8,6 +8,7 @@ const schema = new Schema(
     type: { type: String },
     icon: { type: String, required: true, index: { unique: true } },
     children: { type: Schema.Types.Mixed },
+    products: [{type: Schema.Types.ObjectId, ref: 'product'}],
   },
   { timestamps: true }
 );
