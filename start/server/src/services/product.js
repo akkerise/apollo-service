@@ -3,11 +3,14 @@ const Base = require('./base');
 
 class Product extends Base {
   constructor(){
-    super(product)
+    super(product);
+    this.params = { ...this.params };
   }
-  find(params){
-    const {category} = params;
-    this.params = {...params}
+
+  search(params) {
+    const category = params.category || "";
+    this.params = { ...this.params, ...params };
+    return this.find()
   }
 }
 

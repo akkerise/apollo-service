@@ -1,7 +1,3 @@
-const ProductService = require('./services/product.js'),
-  User = require('./services/user.js'),
-  Category = require('./services/category.js');
-
 const resolvers = {
   Query: {
     getProducts: async (_, params, {dataSources}) => {
@@ -17,7 +13,7 @@ const resolvers = {
       //   .limit(limit);
       // const count = products.length;
       // const hasMore = products.length ? true : false;
-      const products = await dataSources.product.find(params);
+      const products = await dataSources.product.search(params);
       const count = products.length;
       const hasMore = products.length ? true : false;
       return {products, count, hasMore};

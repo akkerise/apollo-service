@@ -10,6 +10,13 @@ const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 const url = `mongodb://localhost:27017/telio`;
 const typeDefs = require('./schema.js');
+
+const context = async ({ req }) => {
+  const token = process.env.ENGINE_API_KEY;
+  const env = 'development';
+  return { token, env };
+};
+
 const dataSources = () => ({
   product: new ProductService(),
   category: new CategoryService(),
@@ -18,7 +25,8 @@ const dataSources = () => ({
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  dataSources
+  dataSources,
+  context
 });
 const app = connect();
 const path = `/telio/graphql`
